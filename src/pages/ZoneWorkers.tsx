@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -7,8 +7,6 @@ import Pagination from '@/components/ui/DataPagination';
 import { getUsersByZone, getUsers, getDepartments, createUser } from '@/services/dataService';
 import { Users as UsersIcon, Search, Plus, X, Loader2, ArrowRight, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 
 const ROLE_OPTIONS = [
   'طبيب بشري',
@@ -74,6 +72,74 @@ function getAvatarStyle(role: string) {
   if (isDoctorRole(role)) return 'bg-teal-50 text-teal-600';
   if (role.includes('تمريض') || role === 'NURSE' || role.includes('مشرفة')) return 'bg-sky-50 text-sky-600';
   return 'bg-gray-50 text-gray-600';
+}
+
+function SearchableSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+  width = 'w-full',
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  options: string[];
+  placeholder?: string;
+  width?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState(value);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setQuery(value); }, [value]);
+
+  const filtered = query ? options.filter(o => o.includes(query)) : options;
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  return (
+    <div className={cn("relative", width)} ref={ref}>
+      <div className="relative">
+        <input
+          type="text"
+          value={query}
+          onChange={e => { setQuery(e.target.value); onChange(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          placeholder={placeholder}
+          className="w-full h-10 px-3 pr-8 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f256e]/20 text-right"
+        />
+        <button type="button" onClick={() => setOpen(!open)} className="absolute left-2 top-1/2 -translate-y-1/2">
+          <ChevronsUpDown className="w-3 h-3 text-gray-400" />
+        </button>
+      </div>
+      {open && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+          {filtered.length === 0 ? (
+            <div className="px-3 py-2 text-xs text-gray-400 text-center">لا توجد نتائج</div>
+          ) : (
+            filtered.map(opt => (
+              <div
+                key={opt}
+                onClick={() => { onChange(opt); setQuery(opt); setOpen(false); }}
+                className={cn(
+                  "px-3 py-2 text-sm text-right hover:bg-[#e8f0f8] cursor-pointer",
+                  value === opt && "bg-[#e8f0f8] font-medium"
+                )}
+              >
+                {opt}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 const zoneNames: Record<string, string> = {
@@ -169,35 +235,13 @@ export default function ZoneWorkers() {
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input type="text" placeholder={t('searchUsers')} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full h-10 pr-10 pl-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f256e]/20 text-right" />
             </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className="h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f256e]/20 bg-white w-48 text-right flex items-center justify-between gap-2"
-                >
-                  <span className={cn("truncate", !roleFilter && "text-gray-400")}>{roleFilter || 'الدور'}</span>
-                  <ChevronsUpDown className="w-3 h-3 text-gray-400 shrink-0" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 p-0" align="end">
-                <Command>
-                  <CommandInput placeholder="بحث..." className="text-right" />
-                  <CommandList>
-                    <CommandEmpty>لا توجد نتائج</CommandEmpty>
-                    <CommandGroup>
-                      <CommandItem onSelect={() => setRoleFilter('')} className="text-right cursor-pointer">
-                        الكل
-                      </CommandItem>
-                      {ROLE_OPTIONS.map(r => (
-                        <CommandItem key={r} onSelect={() => setRoleFilter(r)} className="text-right cursor-pointer">
-                          {r}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <SearchableSelect
+              value={roleFilter}
+              onChange={setRoleFilter}
+              options={ROLE_OPTIONS}
+              placeholder="الدور"
+              width="w-48"
+            />
           </div>
 
           {/* Table */}
@@ -248,32 +292,11 @@ export default function ZoneWorkers() {
                 <div><label className="block text-xs font-medium text-gray-700 mb-1">{t('phone')}</label><input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f256e]/20 text-left" dir="ltr" /></div>
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">{t('role')}</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button
-                        type="button"
-                        className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f256e]/20 bg-white text-right flex items-center justify-between gap-2"
-                      >
-                        <span className="truncate">{form.role}</span>
-                        <ChevronsUpDown className="w-3 h-3 text-gray-400 shrink-0" />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0" align="end">
-                      <Command>
-                        <CommandInput placeholder="بحث..." className="text-right" />
-                        <CommandList>
-                          <CommandEmpty>لا توجد نتائج</CommandEmpty>
-                          <CommandGroup>
-                            {ROLE_OPTIONS.map(r => (
-                              <CommandItem key={r} onSelect={() => setForm({ ...form, role: r })} className="text-right cursor-pointer">
-                                {r}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <SearchableSelect
+                    value={form.role}
+                    onChange={(val) => setForm({ ...form, role: val })}
+                    options={ROLE_OPTIONS}
+                  />
                 </div>
                 <div><label className="block text-xs font-medium text-gray-700 mb-1">{t('department')}</label><select value={form.departmentId} onChange={e => setForm({ ...form, departmentId: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f256e]/20"><option value="">-</option>{departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}</select></div>
                 {isDoctorRole(form.role) && <><div><label className="block text-xs font-medium text-gray-700 mb-1">{t('specialization')}</label><input value={form.specialization} onChange={e => setForm({ ...form, specialization: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f256e]/20 text-right" /></div><div><label className="block text-xs font-medium text-gray-700 mb-1">{t('licenseNumber')}</label><input value={form.licenseNumber} onChange={e => setForm({ ...form, licenseNumber: e.target.value })} className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0f256e]/20 text-left" dir="ltr" /></div></>}

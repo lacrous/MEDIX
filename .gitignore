@@ -8,6 +8,7 @@ build/
 # Environmental variables (Passwords)
 .env
 .env.local
+.vite/
 
 # Logs
 npm-debug.log*
