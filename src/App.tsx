@@ -1,9 +1,11 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext';
 import { useEffect } from 'react';
 import { seedDatabase } from '@/db/seed';
 import Sidebar from '@/components/layout/Sidebar';
+import Footer from '@/components/layout/Footer';
 import Login from '@/pages/Login';
 import Dashboard from '@/pages/Dashboard';
 import Hospitals from '@/pages/Hospitals';
@@ -23,11 +25,16 @@ import { Loader2 } from 'lucide-react';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { direction } = useLanguage();
+  const { collapsed } = useSidebar();
+  const sidebarWidth = collapsed ? 72 : 260;
   return (
     <div className="flex min-h-screen bg-[#f8fafc]" dir={direction}>
       <Sidebar />
-      <div className={direction === 'rtl' ? 'flex-1 mr-[260px]' : 'flex-1 ml-[260px]'}>
-        {children}
+      <div className="flex flex-col flex-1 min-h-screen transition-all duration-300" style={{ marginRight: direction === 'rtl' ? sidebarWidth : 0, marginLeft: direction === 'rtl' ? 0 : sidebarWidth }}>
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
       </div>
     </div>
   );
@@ -99,5 +106,9 @@ export default function App() {
     document.documentElement.lang = direction === 'rtl' ? 'ar' : 'en';
   }, [direction]);
 
-  return <AppRoutes />;
+  return (
+    <SidebarProvider>
+      <AppRoutes />
+    </SidebarProvider>
+  );
 }
