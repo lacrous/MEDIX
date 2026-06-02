@@ -52,7 +52,7 @@ export default function Login() {
               <img
                 src="/images/health-insurance-logo.png"
                 alt="الهيئة العامة للتأمين الصحي"
-                className="w-28 h-28 object-contain mx-auto mb-5 drop-shadow-lg"
+                className="w-[168px] h-[168px] object-contain mx-auto mb-5 drop-shadow-lg"
               />
               <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-[#0f256e]/30 to-transparent mx-auto" />
             </div>
@@ -118,10 +118,9 @@ export default function Login() {
               <img
                 src="/images/health-insurance-logo.png"
                 alt="الهيئة العامة للتأمين الصحي"
-                className="w-16 h-16 object-contain mx-auto mb-3 drop-shadow-md"
+                className="w-[168px] h-[168px] object-contain mx-auto mb-5 drop-shadow-lg"
               />
               <h1 className="text-lg font-bold text-[#0f256e]">MEDIX</h1>
-              <p className="text-xs text-gray-400 mt-0.5">{t('appSubtitle')}</p>
             </div>
 
             {/* Authority reminder */}
