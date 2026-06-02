@@ -98,6 +98,7 @@ export async function seedDatabase() {
   for (let hi = 0; hi < hospitalIds.length; hi++) {
     const hid = hospitalIds[hi];
     const _hCode = hospitalsData[hi].code;
+    let userIdx = 0;
     for (const r of roles) {
       for (let i = 0; i < r.count; i++) {
         const fn = arabicFirstNames[Math.floor(Math.random() * arabicFirstNames.length)];
@@ -113,11 +114,13 @@ export async function seedDatabase() {
           status: 'ACTIVE',
           hospitalId: hid,
           departmentId: deptIdsByHospital[hid][deptIdx],
+          zoneId: String((userIdx % 3) + 1),
           specialization: r.spec ? specializationNames[Math.floor(Math.random() * specializationNames.length)] : undefined,
           licenseNumber: r.spec ? `ML-${_hCode}-${1000 + i}` : undefined,
           createdAt: now,
           updatedAt: now,
         } as any);
+        userIdx++;
       }
     }
   }

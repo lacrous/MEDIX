@@ -87,6 +87,13 @@ export async function getUsers(hospitalId?: string): Promise<User[]> {
   return db.users.toArray();
 }
 
+export async function getUsersByZone(zoneId: string, hospitalId?: string): Promise<User[]> {
+  let users = hospitalId
+    ? await db.users.where('hospitalId').equals(hospitalId).toArray()
+    : await db.users.toArray();
+  return users.filter(u => u.zoneId === zoneId);
+}
+
 export async function getUserById(id: string): Promise<User | undefined> {
   return db.users.get(id);
 }

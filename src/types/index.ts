@@ -58,6 +58,7 @@ export interface User {
   status: UserStatus;
   hospitalId?: string;
   departmentId?: string;
+  zoneId?: string;
   specialization?: string;
   licenseNumber?: string;
   avatarUrl?: string;

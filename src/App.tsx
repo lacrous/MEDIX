@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext';
 import { useEffect } from 'react';
 import { seedDatabase } from '@/db/seed';
+import { seedZones } from '@/db/seedZones';
 import Sidebar from '@/components/layout/Sidebar';
 import Footer from '@/components/layout/Footer';
 import Login from '@/pages/Login';
@@ -15,6 +16,7 @@ import Appointments from '@/pages/Appointments';
 import Departments from '@/pages/Departments';
 import Doctors from '@/pages/Doctors';
 import Nurses from '@/pages/Nurses';
+import ZoneWorkers from '@/pages/ZoneWorkers';
 import Beds from '@/pages/Beds';
 import Pharmacy from '@/pages/Pharmacy';
 import Inventory from '@/pages/Inventory';
@@ -71,6 +73,7 @@ function AppRoutes() {
 
   useEffect(() => {
     seedDatabase();
+    seedZones();
   }, []);
 
   if (!isAuthenticated && location.pathname !== '/login') {
@@ -84,6 +87,7 @@ function AppRoutes() {
       <Route path="/hospitals" element={<ProtectedRoute superAdminOnly><Hospitals /></ProtectedRoute>} />
       <Route path="/patients" element={<ProtectedRoute><Patients /></ProtectedRoute>} />
       <Route path="/users" element={<ProtectedRoute superAdminOnly><Users /></ProtectedRoute>} />
+      <Route path="/workers/zone/:zoneId" element={<ProtectedRoute><ZoneWorkers /></ProtectedRoute>} />
       <Route path="/appointments" element={<ProtectedRoute><Appointments /></ProtectedRoute>} />
       <Route path="/departments" element={<ProtectedRoute><Departments /></ProtectedRoute>} />
       <Route path="/doctors" element={<ProtectedRoute><Doctors /></ProtectedRoute>} />
