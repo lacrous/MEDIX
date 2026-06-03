@@ -1,0 +1,23 @@
+{
+  "version": "0.1.0",
+  "notes": "Initial release",
+  "pub_date": "2026-06-02T00:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "",
+      "url": "https://github.com/lacrous/MEDIX/releases/download/v0.1.0/MEDIX_0.1.0_x64-setup.exe"
+    },
+    "darwin-x86_64": {
+      "signature": "",
+      "url": "https://github.com/lacrous/MEDIX/releases/download/v0.1.0/MEDIX_0.1.0_x64.dmg"
+    },
+    "darwin-aarch64": {
+      "signature": "",
+      "url": "https://github.com/lacrous/MEDIX/releases/download/v0.1.0/MEDIX_0.1.0_aarch64.dmg"
+    },
+    "linux-x86_64": {
+      "signature": "",
+      "url": "https://github.com/lacrous/MEDIX/releases/download/v0.1.0/MEDIX_0.1.0_amd64.AppImage"
+    }
+  }
+}

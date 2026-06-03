@@ -17,3 +17,8 @@ yarn-error.log*
 
 # OS Files
 .DS_Store
+
+# Tauri signing keys
+src-tauri/secret.key
+src-tauri/secret.key.pub
+

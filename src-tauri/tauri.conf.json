@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "MEDIX",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.medix.hms",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3000",
@@ -12,15 +12,32 @@
   "app": {
     "windows": [
       {
-        "title": "MEDIX",
-        "width": 800,
-        "height": 600,
+        "title": "MEDIX - Hospital Management System",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 1024,
+        "minHeight": 768,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "center": true,
+        "decorations": true
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; connect-src 'self' https:; img-src 'self' data:; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEM1MEZDODZEREZFMTEwNDYKUldSR0VPSGZiY2dQeFNNN1JiNkNCWCtXV2xxcXpYUnc4RWtxdGI4TCtBblBCR2o1eEd6aWRtc1kK",
+      "endpoints": [
+        "https://raw.githubusercontent.com/lacrous/MEDIX/main/updates.json"
+      ],
+      "windows": {
+        "installMode": "basicUi"
+      }
     }
   },
   "bundle": {
